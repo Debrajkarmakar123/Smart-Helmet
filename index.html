@@ -2,129 +2,431 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SMART HELMET // Impact Deck</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Helmet - Command Center</title>
     
+    <!-- PWA Meta Tags & Manifest -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#030712">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Smart Helmet">
 
+    <!-- Plyr CSS for Modern Video Player -->
     <link rel="stylesheet" href="https://cdn.plyr.io/3.7.8/plyr.css" />
     <style>
-        /* --- CSS Variables & Reset (Same as before) --- */
-        :root {
-            --bg-dark: #030712;
-            --text-light: #f3f4f6;
-            --text-muted: #9ca3af;
-            --color-online: #34d399;
-            --color-offline: #ef4444;
-            --color-impact: #f59e0b; /* Amber for warning */
-            --color-critical: #ef4444; /* Red for severe */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background-color: var(--bg-dark); color: var(--text-light); min-height: 100vh; padding-bottom: 80px; overflow-x: hidden; }
-        .wrapper { width: 100%; max-width: 600px; margin: 0 auto; }
+        body {
+            background-color: #030712;
+            color: #f3f4f6;
+            padding: 30px;
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(circle at 10% 20%, rgba(31, 111, 235, 0.08) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(16, 185, 129, 0.08) 0%, transparent 40%);
+        }
 
-        /* --- Mobile UI Elements --- */
-        header { position: sticky; top: 0; z-index: 1000; background: rgba(17, 24, 39, 0.85); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; }
-        .nav-brand { font-size: 16px; font-weight: 800; background: linear-gradient(135deg, #60a5fa, #34d399); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: flex; align-items: center; gap: 8px; }
-        .status-badge { display: flex; align-items: center; gap: 8px; padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 700; transition: all 0.3s ease; }
-        .status-online { background: rgba(16, 185, 129, 0.1); color: var(--color-online); border: 1px solid rgba(16, 185, 129, 0.3); }
-        .status-offline { background: rgba(239, 68, 68, 0.1); color: var(--color-offline); border: 1px solid rgba(239, 68, 68, 0.3); }
-        .dot { width: 7px; height: 7px; border-radius: 50%; transition: background-color 0.3s; }
-        .status-online .dot { background-color: var(--color-online); box-shadow: 0 0 10px var(--color-online); }
-        .status-offline .dot { background-color: var(--color-offline); box-shadow: 0 0 10px var(--color-offline); }
+        .wrapper {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
 
-        .content-container { padding: 20px; display: flex; flex-direction: column; gap: 25px; }
-        .card { background: rgba(17, 24, 39, 0.6); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 18px; padding: 20px; }
-        .card-header-h2 { font-size: 13px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; font-weight: 700; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;}
-        .media-container { width: 100%; background: #000; border-radius: 16px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.08); position: relative; aspect-ratio: 4/3; }
-        .media-container img { width: 100%; height: 100%; object-fit: cover; }
-        .plyr { height: 100%; }
+        /* Luxurious Glassmorphism Header */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(17, 24, 39, 0.75);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 20px 30px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+            position: relative;
+            overflow: hidden;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
 
-        /* --- NEW: Impact Rating UI --- */
-        .impact-card { border-color: rgba(245, 158, 11, 0.3); /* subtle amber border */ }
-        .impact-header { color: var(--color-impact); }
-        
-        .rating-display { display: flex; align-items: baseline; justify-content: center; gap: 10px; margin: 15px 0; }
-        .rating-value { font-size: 48px; font-weight: 900; color: var(--color-impact); transition: color 0.3s ease; }
-        .rating-label { font-size: 14px; color: var(--text-muted); font-weight: 600; }
+        header::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #3b82f6, #34d399, transparent);
+            animation: helmetScan 4s linear infinite;
+        }
 
-        /* Animated Meter Bar */
-        .meter-container { width: 100%; height: 10px; background: rgba(255, 255, 255, 0.05); border-radius: 5px; overflow: hidden; position: relative; }
-        .meter-bar { height: 100%; width: 0%; background: linear-gradient(90deg, var(--color-online), var(--color-impact), var(--color-critical)); border-radius: 5px; transition: width 0.3s ease-out; }
-        
-        /* Critical Alert State */
-        .critical .rating-value { color: var(--color-critical); }
-        .critical .meter-bar { background: var(--color-critical); width: 100% !important; animation: criticalPulse 0.5s infinite alternate; }
+        @keyframes helmetScan {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
 
-        @keyframes criticalPulse { 0% { opacity: 0.5; } 100% { opacity: 1; } }
+        .logo-container {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
 
-        /* --- Controls & Archives (Same) --- */
-        .controls-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .btn { background: rgba(255, 255, 255, 0.04); color: var(--text-light); border: 1px solid rgba(255, 255, 255, 0.08); padding: 16px; border-radius: 12px; font-size: 14px; font-weight: 700; cursor: pointer; text-decoration: none; text-align: center; display: flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.2s ease; }
-        .btn:active { transform: scale(0.98); }
-        .btn-blue { background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; border: none; grid-column: span 2; }
+        .logo h1 {
+            font-size: 24px;
+            background: linear-gradient(135deg, #60a5fa, #34d399);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
 
-        .recordings-list { display: flex; flex-direction: column; gap: 12px; }
-        .record-item { display: flex; justify-content: space-between; align-items: center; background: rgba(17, 24, 39, 0.5); border: 1px solid rgba(255, 255, 255, 0.05); padding: 16px; border-radius: 12px; color: var(--color-online); font-size: 14px; font-weight: 600; }
-        .record-meta { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
-        .play-tag { font-size: 11px; background: rgba(16, 185, 129, 0.1); color: var(--color-online); padding: 6px 12px; border-radius: 20px; font-weight: 700; }
-        
-        .mobile-footer { text-align: center; padding: 20px; font-size: 11px; color: var(--text-muted); border-top: 1px solid rgba(255, 255, 255, 0.05); margin-top: 10px; }
-        .footer-name { color: var(--color-online); font-weight: 700; }
+        .creator-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #38bdf8;
+            background: rgba(56, 189, 248, 0.1);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            padding: 4px 12px;
+            border-radius: 20px;
+            width: fit-content;
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.2);
+        }
+
+        .helmet-icon {
+            display: inline-block;
+            animation: iconGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes iconGlow {
+            0% { filter: drop-shadow(0 0 2px rgba(52, 211, 153, 0.4)); }
+            100% { filter: drop-shadow(0 0 10px rgba(52, 211, 153, 0.8)); }
+        }
+
+        .status-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 18px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .status-online {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #34d399;
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.15);
+        }
+
+        .status-offline {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #ef4444;
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.15);
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            transition: background-color 0.3s;
+        }
+
+        .status-online .dot {
+            background-color: #34d399;
+            box-shadow: 0 0 10px #34d399;
+            animation: pulse 2s infinite;
+        }
+
+        .status-offline .dot {
+            background-color: #ef4444;
+            box-shadow: 0 0 10px #ef4444;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); opacity: 1; box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.7); }
+            70% { transform: scale(1); opacity: 1; box-shadow: 0 0 0 8px rgba(52, 211, 153, 0); }
+            100% { transform: scale(0.95); opacity: 1; box-shadow: 0 0 0 0 rgba(52, 211, 153, 0); }
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 25px;
+        }
+
+        @media (max-width: 950px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background: rgba(17, 24, 39, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 18px;
+            padding: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            margin-bottom: 25px;
+            transition: border-color 0.3s ease;
+        }
+
+        .card:hover {
+            border-color: rgba(96, 165, 250, 0.25);
+        }
+
+        .card-header-flex {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 18px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            padding-bottom: 12px;
+        }
+
+        .card h2 {
+            font-size: 13px;
+            color: #9ca3af;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .tool-btn {
+            background: rgba(255, 255, 255, 0.05);
+            color: #d1d5db;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .tool-btn:hover {
+            background: rgba(59, 130, 246, 0.2);
+            color: #ffffff;
+            border-color: rgba(59, 130, 246, 0.5);
+        }
+
+        .media-container {
+            width: 100%;
+            background: #000;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            position: relative;
+        }
+
+        .media-container img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .plyr {
+            border-radius: 12px;
+            --plyr-color-main: #3b82f6;
+            --plyr-video-background: #000;
+        }
+
+        .controls-flex {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .btn {
+            background: rgba(255, 255, 255, 0.04);
+            color: #e5e7eb;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 14px 18px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            text-decoration: none;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: #ffffff;
+            border-color: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+        }
+
+        .btn-blue {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            color: white;
+            border: 1px solid rgba(59, 130, 246, 0.4);
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.35);
+        }
+
+        .btn-blue:hover {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.55);
+        }
+
+        .recordings-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .record-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(3, 7, 18, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 14px 18px;
+            border-radius: 12px;
+            text-decoration: none;
+            color: #60a5fa;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .record-item:hover {
+            background: rgba(31, 111, 235, 0.08);
+            border-color: rgba(59, 130, 246, 0.3);
+            transform: translateX(3px);
+        }
+
+        .record-meta {
+            font-size: 12px;
+            color: #9ca3af;
+            margin-top: 2px;
+        }
+
+        footer {
+            margin-top: 50px;
+            padding: 25px;
+            border-radius: 16px;
+            background: rgba(17, 24, 39, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            text-align: center;
+            font-size: 13px;
+            color: #9ca3af;
+        }
+
+        .footer-credit {
+            font-weight: 700;
+            font-size: 15px;
+            background: linear-gradient(135deg, #38bdf8, #34d399);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: 0.5px;
+        }
     </style>
 </head>
 <body>
 
     <div class="wrapper">
+        <!-- Header -->
         <header>
-            <div class="nav-brand"><span class="helmet-icon">🪖</span> MOBILE // DECK</div>
-            <div id="statusBadge" class="status-badge status-offline">
+            <div class="logo-container">
+                <div class="creator-badge">⚡ Developed by Debraj Karmakar</div>
+                <div class="logo">
+                    <h1><span class="helmet-icon">🪖</span> Smart Helmet Command Center</h1>
+                </div>
+            </div>
+            <!-- Functional Status Badge -->
+            <div id="statusBadge" class="status-badge status-online">
                 <div class="dot"></div>
-                <span id="statusText">CONNECTING...</span>
+                <span id="statusText">HELMET ONLINE</span>
             </div>
         </header>
 
-        <div class="content-container">
+        <!-- Main Grid -->
+        <div class="dashboard-grid">
             
-            <!-- --- NEW: Impact Rating Panel --- -->
-            <div id="impactCard" class="card impact-card">
-                <div class="card-header-h2">
-                    <span class="impact-header">⚡ IMPACT ALERT</span>
-                    <span id="impactTimestamp" style="font-weight: 400; text-transform: none;">Monitoring...</span>
+            <!-- Left Side: Live Stream + Modern Plyr Player -->
+            <div>
+                <div class="card">
+                    <div class="card-header-flex">
+                        <h2>Helmet Live Feed</h2>
+                        <div class="stream-tools">
+                            <button class="tool-btn" onclick="reloadStream()">🔄 Refresh Feed</button>
+                        </div>
+                    </div>
+                    <div class="media-container" id="streamContainer">
+                        <img id="liveStreamImg" src="http://localhost:5000/video_feed" alt="Connecting to Smart Helmet Camera..." onerror="handleStreamError()" onload="handleStreamSuccess()">
+                    </div>
                 </div>
-                <div class="rating-display">
-                    <span id="ratingValue" class="rating-value">0.0</span>
-                    <span class="rating-label">g-Force Severity</span>
-                </div>
-                <div class="meter-container">
-                    <div id="meterBar" class="meter-bar"></div>
+
+                <div class="card">
+                    <h2>Playback Player</h2>
+                    <div class="media-container">
+                        <video id="player" playsinline controls>
+                            <source src="" type="video/mp4" />
+                        </video>
+                    </div>
                 </div>
             </div>
 
-            <!-- Live Stream Panel -->
-            <div class="card">
-                <div class="card-header-h2"><h2>Live Feed</h2></div>
-                <div class="media-container">
-                    <img id="liveStreamImg" src="http://localhost:5000/video_feed" alt="Connecting to Helmet..." onerror="handleStreamError()" onload="handleStreamSuccess()">
+            <!-- Right Side: Controls & Recordings list -->
+            <div>
+                <div class="card">
+                    <h2>Helmet Controls</h2>
+                    <div class="controls-flex">
+                        <a href="http://192.168.4.20/capture" target="_blank" class="btn btn-blue">📷 Take Snapshot</a>
+                        <a href="http://192.168.4.20/settings" class="btn">⚙️ Helmet Settings</a>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2>Saved Recordings</h2>
+                    <div class="recordings-list">
+                        <div class="record-item" onclick="playVideo('http://192.168.4.20/recording_01.mp4')">
+                            <div>
+                                <div style="font-weight: 500;">📁 Recording_01.mp4</div>
+                                <div class="record-meta">Today, 06:15 PM</div>
+                            </div>
+                            <span style="font-size: 12px; font-weight: 600; background: rgba(59,130,246,0.12); padding: 5px 12px; border-radius: 8px;">▶ Play</span>
+                        </div>
+                        <div class="record-item" onclick="playVideo('http://192.168.4.20/recording_02.mp4')">
+                            <div>
+                                <div style="font-weight: 500;">📁 Recording_02.mp4</div>
+                                <div class="record-meta">Yesterday, 11:30 PM</div>
+                            </div>
+                            <span style="font-size: 12px; font-weight: 600; background: rgba(59,130,246,0.12); padding: 5px 12px; border-radius: 8px;">▶ Play</span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Operations Panel -->
-            <div class="card">
-                <div class="card-header-h2"><h2>Command</h2></div>
-                <div class="controls-grid">
-                    <a href="http://192.168.4.20/capture" target="_blank" class="btn btn-blue">📷 CAPTURE SNAPSHOT</a>
-                </div>
-            </div>
         </div>
 
-        <footer class="mobile-footer">
-            SMART HELMET COMMAND SYSTEM &bull; BY <span class="footer-name">DEBRAJ KARMAKAR</span>
+        <!-- Footer with Official Credit -->
+        <footer>
+            Smart Helmet Command System &bull; Designed & Built with Precision by <span class="footer-credit">Debraj Karmakar</span>
         </footer>
     </div>
 
@@ -133,83 +435,57 @@
     <script>
         const player = new Plyr('#player');
 
-        // --- Streaming Status Logic (Same as before) ---
+        function playVideo(videoUrl) {
+            const videoElement = document.getElementById('player');
+            player.source = {
+                type: 'video',
+                sources: [{ src: videoUrl, type: 'video/mp4' }]
+            };
+            player.play();
+            videoElement.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function reloadStream() {
+            const img = document.getElementById('liveStreamImg');
+            const currentSrc = img.src.split('?')[0];
+            img.src = currentSrc + '?t=' + new Date().getTime();
+        }
+
+        // Functional Live Status Checker
         const badge = document.getElementById('statusBadge');
         const statusText = document.getElementById('statusText');
-        function handleStreamSuccess() { badge.className = "status-badge status-online"; statusText.innerText = "ONLINE"; }
-        function handleStreamError() { badge.className = "status-badge status-offline"; statusText.innerText = "OFFLINE"; badge.classList.remove('critical'); }
 
+        function handleStreamSuccess() {
+            badge.className = "status-badge status-online";
+            statusText.innerText = "HELMET ONLINE";
+        }
+
+        function handleStreamError() {
+            badge.className = "status-badge status-offline";
+            statusText.innerText = "HELMET OFFLINE";
+        }
+
+        // Connection Check Ping (every 5 seconds)
         setInterval(() => {
             const img = document.getElementById('liveStreamImg');
             const testImg = new Image();
-            testImg.onload = handleStreamSuccess;
-            testImg.onerror = handleStreamError;
+            testImg.onload = function() {
+                handleStreamSuccess();
+            };
+            testImg.onerror = function() {
+                handleStreamError();
+            };
             testImg.src = img.src.split('?')[0] + '?ping=' + new Date().getTime();
         }, 5000);
 
-
-        // --- NEW: MOCK IMPACT RATING LOGIC ---
-        const impactCard = document.getElementById('impactCard');
-        const ratingValueDisplay = document.getElementById('ratingValue');
-        const meterBar = document.getElementById('meterBar');
-        const timestampDisplay = document.getElementById('impactTimestamp');
-        
-        let currentRating = 0.0;
-        let decayInterval;
-
-        // Function to update UI based on rating
-        function updateImpactUI(rating) {
-            rating = Math.max(0, Math.min(15, rating)); // Clamp between 0 and 15g
-            ratingValueDisplay.innerText = rating.toFixed(1);
-            
-            // Update Meter Width (0 to 100%)
-            const percentage = (rating / 15) * 100;
-            meterBar.style.width = `${percentage}%`;
-
-            // Color & Animation States
-            if (rating > 10) {
-                impactCard.classList.add('critical'); // Flashing red alert
-            } else {
-                impactCard.classList.remove('critical');
-                // Change meter color based on severity manually if CSS var fails
-                if (rating > 5) meterBar.style.background = 'var(--color-impact)';
-                else meterBar.style.background = 'var(--color-online)';
-            }
-
-            if (rating > 0.1) {
-                 timestampDisplay.innerText = new Date().toLocaleTimeString();
-            }
+        // Register Service Worker for PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('Service Worker Registered!', reg))
+                    .catch(err => console.log('Service Worker Registration Failed!', err));
+            });
         }
-
-        // Function to simulate an impact (called externally, e.g. from motion detect)
-        function simulateImpact(force) {
-             // Reset decay
-             clearInterval(decayInterval);
-             
-             // Set new high rating
-             currentRating = force;
-             updateImpactUI(currentRating);
-             
-             // Start decaying back to 0
-             decayInterval = setInterval(() => {
-                 currentRating -= 0.1;
-                 if(currentRating <= 0) {
-                     currentRating = 0;
-                     clearInterval(decayInterval);
-                 }
-                 updateImpactUI(currentRating);
-             }, 100); // decay every 100ms
-        }
-
-        // DEMO: Simulate a random impact every 15 seconds just to show it working
-        // In reality, you would call simulateImpact(intensityValue) from your video motion logic
-        setInterval(() => {
-             if (statusText.innerText === "ONLINE") {
-                  const randomForce = Math.random() * 12; // Random g-force between 0 and 12
-                  simulateImpact(randomForce);
-             }
-        }, 15000);
-
     </script>
 </body>
 </html>
